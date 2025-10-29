@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Formatter Reports</title>
+    <style>
+        :root {
+            --primary-color: #6a0dad;
+            --bg-color: #ffffff;
+            --secondary-bg: #e0e0f0;
+            --text-color: #333;
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--secondary-bg);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: var(--text-color);
+        }
+
+        textarea, input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        input[type="file"] {
+            margin-top: 5px;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #580a9a;
+        }
+
+        button.submit-btn {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button.submit-btn:hover { background: #580a9a; }
+
+        .preview {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .img-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .img-wrapper img {
+            max-width: 150px;
+            max-height: 150px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 12px;
+            background: red;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            cursor: pointer;
+            line-height: 16px;
+            text-align: center;
+        }
+
+        .remove-btn:hover {
+            background: red;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗃️ Formatter Reports 🗃️</h1>
+        <form action="{{ url_for('index') }}" method="post" enctype="multipart/form-data">
+            <label>Título</label>
+            <input type="text" name="title" placeholder="Ex: [AÇÃO_REALIZADA] - [EQUIPAMENTO_CONFIGURADO] [SIGLA_CLIENTE]" required>
+
+            <label>Data da execução</label>
+            <input type="date" name="exec_date" value="{{ today }}" required>
+
+            <label>Responsável técnico</label>
+            <input type="text" name="analyst_name" required>
+
+            {% for sec, sec_label in [
+                ("analysis", "Análise Inicial"),
+                ("actions", "Ações Executadas"),
+                ("tests", "Resultados / Testes"),
+                ("obs", "Observações"),
+                ("final_analysis", "Conclusão de Análise")
+            ] %}
+                <label>{{ sec_label }}</label>
+                <textarea name="{{ sec }}"></textarea>
+                <input type="file" name="{{ sec }}_files" multiple accept="image/png, image/jpeg" onchange="previewImages(this, '{{ sec }}_preview')">
+                <div class="preview" id="{{ sec }}_preview"></div>
+            {% endfor %}
+
+            <button type="submit" class="submit-btn">🧾 Gerar Relatório</button>
+        </form>
+    </div>
+
+    <script>
+        function previewImages(input, previewDivId) {
+            const previewDiv = document.getElementById(previewDivId);
+            previewDiv.innerHTML = "";
+
+            const dt = new DataTransfer();
+
+            Array.from(input.files).forEach((file, index) => {
+                dt.items.add(file);
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const wrapper = document.createElement("div");
+                    wrapper.classList.add("img-wrapper");
+
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+
+                    const removeBtn = document.createElement("button");
+                    removeBtn.type = "button";
+                    removeBtn.className = "remove-btn";
+                    removeBtn.innerHTML = "&times;";
+                    removeBtn.onclick = () => {
+                        wrapper.remove();
+                        const newFiles = Array.from(dt.files).filter((_, i) => i !== index);
+                        const newDT = new DataTransfer();
+                        newFiles.forEach(f => newDT.items.add(f));
+                        input.files = newDT.files;
+                        previewImages(input, previewDivId);
+                    };
+
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(removeBtn);
+                    previewDiv.appendChild(wrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            input.files = dt.files;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .report-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .report-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            color: #1f4e79;
+            margin-bottom: 10px;
+        }
+        .report-subtitle {
+            font-size: 16px;
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .report-section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f4e79;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #1f4e79;
+            padding-bottom: 4px;
+        }
+        .section-content {
+            white-space: pre-wrap;
+            padding-left: 10px;
+            color: #333;
+        }
+        .section-content img {
+            max-width: 600px;
+            display: block;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .report-footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-title">{{ title }}</div>
+        <div class="report-subtitle">{{ exec_date }} - {{ analyst_name }}</div>
+
+        <div class="report-section">
+            <div class="section-title">ANÁLISE INICIAL</div>
+            <div class="section-content">
+                {{ analysis }}
+                {% if analysis_prints %}
+                    {% for p in analysis_prints %}
+                        <img src="{{ p }}" alt="Print">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="report-section">
+            <div class="section-title">AÇÕES EXECUTADAS</div>
+            <div class="section-content">
+                {{ actions }}
+                {% if actions_prints %}
+                    {% for p in actions_prints %}
+                        <img src="{{ p }}" alt="Print">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="report-section">
+            <div class="section-title">RESULTADOS / TESTES</div>
+            <div class="section-content">
+                {{ tests }}
+                {% if tests_prints %}
+                    {% for p in tests_prints %}
+                        <img src="{{ p }}" alt="Print">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="report-section">
+            <div class="section-title">OBSERVAÇÕES</div>
+            <div class="section-content">
+                {{ obs }}
+                {% if obs_prints %}
+                    {% for p in obs_prints %}
+                        <img src="{{ p }}" alt="Print">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="report-section">
+            <div class="section-title">CONCLUSÃO DE ANÁLISE</div>
+            <div class="section-content">
+                {{ final_analysis }}
+                {% if final_analysis_prints %}
+                    {% for p in final_analysis_prints %}
+                        <img src="{{ p }}" alt="Print">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="report-footer">
+            Gerado automaticamente pelo Formatter Reports
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+services:
+  formatter-reports:
+    build: .
+    container_name: formatter-reports
+    ports:
+      - "5000:5000"
+    volumes:
+      - formatter_data:/app/static/screenshots
+    restart: unless-stopped
+
+volumes:
+  formatter_data:
