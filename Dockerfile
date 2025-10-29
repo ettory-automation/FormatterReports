@@ -13,6 +13,10 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
@@ -21,5 +25,8 @@ COPY app /app
 USER formreports
 
 EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:5000/ || exit 1
 
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers=4", "--threads=2", "--timeout=120"]
